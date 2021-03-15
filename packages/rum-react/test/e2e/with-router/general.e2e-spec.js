@@ -96,7 +96,7 @@ describe('General usecase with react-router', function() {
     )
     /**
      * `app` and `resource` span type will not be captured in safari 9 since
-     * User and Resource API is not supported.
+     * User and Resource Timing API is not supported.
      */
     const { name } = getBrowserInfo()
     if (name.indexOf('safari') >= 0) {

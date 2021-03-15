@@ -40,13 +40,19 @@ import { createServiceFactory } from '@elastic/apm-rum-core'
 import { getApmRoute } from '../../src/get-apm-route'
 import { getGlobalConfig } from '../../../../dev-utils/test-config'
 
-function Component(props) {
-  return <h1>Testing, {props.name}</h1>
-}
-
 describe('ApmRoute', function() {
   const { serverUrl, serviceName } = getGlobalConfig().agentConfig
   let serviceFactory, apmBase
+
+  function Component(props) {
+    return <h1>Testing, {props.name}</h1>
+  }
+  const Home = () => 'home'
+  class Topics extends React.Component {
+    render() {
+      return 'Topics'
+    }
+  }
 
   beforeEach(() => {
     serviceFactory = createServiceFactory()
@@ -79,30 +85,31 @@ describe('ApmRoute', function() {
     expect(component.text()).toBe('Testing, ')
   })
 
-  it('should work with Route render and log warning', function() {
-    const loggingService = serviceFactory.getService('LoggingService')
+  it('should work with Route render and children', function() {
     const ApmRoute = getApmRoute(apmBase)
-
-    spyOn(loggingService, 'warn')
-
+    const transactionService = serviceFactory.getService('TransactionService')
+    const dummyTr = {
+      name: 'test',
+      detectFinish: () => {}
+    }
+    spyOn(transactionService, 'startTransaction').and.returnValue(dummyTr)
     const rendered = mount(
-      <Router initialEntries={['/']}>
-        <ApmRoute path="/" render={() => <Component name={'render-test'} />} />
+      <Router initialEntries={['/', '/topic1', '/topic2']}>
+        <ApmRoute path={'/'} component={Home} />
+        <ApmRoute path="/topic1" render={Topics} />
+        <ApmRoute path="/topic2">{Topics}</ApmRoute>
       </Router>
     )
 
-    var apmRoute = rendered.find(ApmRoute)
-    var route = rendered.find(Route)
-    var component = rendered.find(Component)
-    expect(apmRoute.name()).toBe('ApmRoute')
-    expect(route.name()).toBe('Route')
-    expect(route.props()).toEqual(
-      jasmine.objectContaining({ path: '/', render: jasmine.any(Function) })
-    )
-    expect(component.text()).toBe('Testing, render-test')
-    expect(loggingService.warn).toHaveBeenCalledWith(
-      '/ is not instrumented since component property is not provided'
-    )
+    expect(rendered.text()).toBe('home')
+    expect(dummyTr.name).toBe('/')
+    const history = rendered.find(Home).props().history
+    history.push({ pathname: '/topic2' })
+    expect(dummyTr.name).toBe('/topic2')
+    expect(transactionService.startTransaction).toHaveBeenCalledTimes(2)
+    history.push({ pathname: '/topic1' })
+    expect(dummyTr.name).toBe('/topic1')
+    expect(transactionService.startTransaction).toHaveBeenCalledTimes(3)
   })
 
   it('should work correctly with path array in props', function() {
@@ -115,16 +122,9 @@ describe('ApmRoute', function() {
     }
     spyOn(transactionService, 'startTransaction').and.returnValue(dummyTr)
 
-    const Home = () => 'home'
-    class Topics extends React.Component {
-      render() {
-        return 'Topics'
-      }
-    }
-
     const rendered = mount(
       <Router initialEntries={['/', '/topic1', '/topic2']}>
-        <ApmRoute path={['/']} component={Home} />
+        <ApmRoute path={['/']} render={Home} />
         <ApmRoute path={['/topic1', '/topic2']} component={Topics} />
       </Router>
     )
@@ -151,7 +151,7 @@ describe('ApmRoute', function() {
       <Router initialEntries={['/home', '/new']}>
         <>
           <ApmRoute path="/home" component={Component} />
-          <ApmRoute path="/new" component={() => <h1>New</h1>} />
+          <ApmRoute path="/new" render={() => <h1>New</h1>} />
         </>
       </Router>
     )

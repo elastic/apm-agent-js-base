@@ -87,7 +87,7 @@ class App extends React.Component {
           <ApmRoute
             exact
             path="/"
-            component={() => (
+            render={() => (
               <Redirect
                 to={{
                   pathname: '/home'
@@ -96,10 +96,10 @@ class App extends React.Component {
             )}
           />
           <ApmRoute path="/home" component={MainComponent} />
-          <Route path="/about" render={() => <div>about</div>} />
+          <ApmRoute path="/about" render={() => <div>about</div>} />
           <ApmRoute path="/func" component={FunctionalComponent} />
-          <ApmRoute path="/topics" component={MainComponent} />
-          <ApmRoute path="/topic/:id" component={TopicComponent} />
+          <ApmRoute path="/topics" render={TopicComponent} />
+          <ApmRoute path="/topic/:id">{TopicComponent}</ApmRoute>
           <Route
             path="/manual"
             component={() => (

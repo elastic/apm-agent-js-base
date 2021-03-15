@@ -29,6 +29,7 @@ import React, { Suspense } from 'react'
 import { render } from 'react-dom'
 import { BrowserRouter, Link, Switch } from 'react-router-dom'
 import FunctionalComponent from '../components/func-component'
+import TopicComponent from '../components/topic-component'
 import { ApmRoute } from '../../../src'
 import createApmBase from '..'
 
@@ -49,10 +50,19 @@ function App() {
             Functional
           </Link>
         </li>
+        <li>
+          <Link id="topics" to="/topics">
+            Topics
+          </Link>
+        </li>
       </ul>
       <Suspense fallback={<div>Loading...</div>}>
         <Switch>
           <ApmRoute path="/func" component={FunctionalComponent} />
+          <ApmRoute
+            path="/topics"
+            render={props => <TopicComponent {...props} />}
+          />
           <ApmRoute component={NotFound} />
         </Switch>
       </Suspense>

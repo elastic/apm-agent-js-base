@@ -50,7 +50,7 @@ class TopicComponent extends React.Component {
 
   render() {
     return (
-      <div>
+      <div id="topics-container">
         <h3>
           <span>{this.props.match.path}</span>
         </h3>

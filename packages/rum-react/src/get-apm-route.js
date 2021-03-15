@@ -51,7 +51,7 @@ function getApmRoute(apm) {
 
     static getDerivedStateFromProps(nextProps, prevState) {
       const initial = prevState.apmComponent == null
-      const { path, component } = nextProps
+      const { path, component, render, children } = nextProps
       const pathChanged = path != prevState.path
 
       /**
@@ -60,9 +60,14 @@ function getApmRoute(apm) {
        * Ex: Query param changes should not result in new apmComponent
        */
       if (initial || pathChanged) {
+        /**
+         * Route children takes precedence over component and render function
+         * to keep in sync with the Route Component
+         */
         return {
-          path,
-          apmComponent: withTransaction(
+          render: null,
+          children: null,
+          component: withTransaction(
             path,
             'route-change',
             (transaction, props) => {
@@ -71,14 +76,14 @@ function getApmRoute(apm) {
                 name && (transaction.name = name)
               }
             }
-          )(component)
+          )(children || component || render)
         }
       }
       return null
     }
 
     render() {
-      return <Route {...this.props} component={this.state.apmComponent} />
+      return <Route {...this.props} {...this.state} />
     }
   }
 }

@@ -17,7 +17,7 @@ npm install @elastic/apm-rum-react --save
 [float]
 ==== Instrumenting your React application
 
-The React integration package provides two approaches to instrumenting your application:
+The React integration package provides multiple ways to instrument your application:
 
 [float]
 ===== Instrumenting application routes
@@ -38,7 +38,7 @@ import { ApmRoute } from '@elastic/apm-rum-react'
 
 Then, you should replace `Route` components from the `react-router` library
 with `ApmRoute`. You can use `ApmRoute` in any of the routes that you would like to monitor,
- therefore, you don't have to change all of your routes:
+therefore, you don't have to change all of your routes:
 
 
 [source,js]
@@ -46,7 +46,7 @@ with `ApmRoute`. You can use `ApmRoute` in any of the routes that you would like
 class App extends React.Component {
   render() {
     return (
-      <div>
+      <>
         <ApmRoute
           exact
           path="/"
@@ -58,17 +58,16 @@ class App extends React.Component {
             />
           )}
         />
-        <ApmRoute path="/home" component={HomeComponent} />
-        <Route path="/about" component={AboutComponent} />
-      </div>
+        <ApmRoute path="/faq" component={FaqComponent} />
+        <ApmRoute path="/home" render={HomeComponent} />
+        <ApmRoute path="/about">
+          {AboutComponent}
+        </ApmRoute>
+      </>
     )
   }
 }
 ----
-
-NOTE: `ApmRoute` only instruments the route if component property is provided, in other cases, e.g. using `render` or `children` properties, 
-ApmRoute will only renders the route without instrumenting it, 
-please instrument the individual component using `withTransaction` in these cases instead.
 
 
 [float]
@@ -131,3 +130,4 @@ function Routes() {
 class LazyComponent extends Component {}
 export default withTransaction('LazyComponent', 'component')(LazyComponent)
 ----
+

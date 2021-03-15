@@ -67,4 +67,28 @@ describe('Using Switch component of react router', function() {
      */
     expect(foundSpans.length).toBeGreaterThanOrEqual(1)
   })
+
+  it('should capture render props as transaction', () => {
+    browser.waitUntil(
+      () => {
+        $('#topics').click()
+        const componentContainer = $('#topics-container')
+        return componentContainer.getText().indexOf('/topics') !== -1
+      },
+      5000,
+      'expected topic component to be rendered'
+    )
+
+    const { sendEvents } = waitForApmServerCalls(0, 3)
+    const { transactions } = sendEvents
+
+    const routeTransaction = transactions[2]
+    expect(routeTransaction.name).toBe('/topics')
+    expect(routeTransaction.type).toBe('route-change')
+
+    const foundSpans = routeTransaction.spans.filter(
+      span => span.name === 'GET /test/e2e/data.json'
+    )
+    expect(foundSpans.length).toBe(1)
+  })
 })

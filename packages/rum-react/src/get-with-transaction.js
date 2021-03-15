@@ -54,9 +54,7 @@ function getWithTransaction(apm) {
 
       if (!Component) {
         const loggingService = apm.serviceFactory.getService('LoggingService')
-        loggingService.warn(
-          `${name} is not instrumented since component property is not provided`
-        )
+        loggingService.warn(`${name} is not instrumented by the agent`)
         return Component
       }
 
