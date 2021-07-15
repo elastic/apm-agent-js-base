@@ -41,7 +41,7 @@ pipeline {
     booleanParam(name: 'saucelab_test', defaultValue: "true", description: "Enable run a Sauce lab test")
     booleanParam(name: 'bench_ci', defaultValue: true, description: 'Enable benchmarks')
     booleanParam(name: 'release', defaultValue: false, description: 'Release. If so, all the other parameters will be ignored when releasing from master.')
-    string(name: 'stack_version', defaultValue: '7.13.1', description: "What's the Stack Version to be used for the load testing?")
+    string(name: 'stack_version', defaultValue: '7.13.3', description: "What's the Stack Version to be used for the load testing?")
   }
   stages {
     stage('Initializing'){
@@ -115,7 +115,7 @@ pipeline {
                   // The below line is part of the bump release automation
                   // if you change anything please modifies the file
                   // .ci/bump-stack-release-version.sh
-                  values '8.0.0-SNAPSHOT', '7.x', '7.13.2'
+                  values '8.0.0-SNAPSHOT', '7.x', '7.14.0'
                 }
                 axis {
                   name 'SCOPE'

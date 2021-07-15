@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -xeo pipefail
-STACK_VERSION=${STACK_VERSION:-7.13.1}
+STACK_VERSION=${STACK_VERSION:-7.13.3}
 
 pip install docker-compose>=1.25.4
 
